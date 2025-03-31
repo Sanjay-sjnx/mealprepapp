@@ -15,10 +15,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()  // Allow all requests without authentication
-            );
+                .requestMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .cors(withDefaults());
+        
+        // Enable H2 Console frame
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
         
         return http.build();
     }
